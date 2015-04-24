@@ -19,8 +19,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import mydropbox.MyDropboxSwing;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -34,7 +37,7 @@ public class DownloadHTTP {
 
 	public void getAll() throws IllegalStateException, IOException {
 		// TODO Auto-generated method stub
-		String URL = "http://localhost:8112/user/files/all";
+		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/files/all";
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(URL);
 		CloseableHttpResponse response = client.execute(httpGet);
@@ -59,8 +62,14 @@ public class DownloadHTTP {
 					Node node = nodeListDirectory.item(i);
 					String name = node.getAttributes().getNamedItem("name").getNodeValue();
 					Path pathDir = Paths.get(name);
-					Files.createDirectory(pathDir);
-			     	System.out.println(node.getAttributes().getNamedItem("name"));
+					System.out.println(pathDir.toString());
+					try{
+						Files.createDirectory(pathDir);
+					}catch(Exception ex)
+					{
+						ex.printStackTrace();
+					}
+					System.out.println(node.getAttributes().getNamedItem("name"));
 				}
 				String lstFileQuery = "//File";
 				NodeList nodeListFile = (NodeList) xPath.compile(lstFileQuery).evaluate(document,XPathConstants.NODESET);
@@ -90,18 +99,21 @@ public class DownloadHTTP {
 	/*
 	 * Download file theo id
 	 */
-	private void downloadFile(String fileId, String name) {
+	public void downloadFile(String fileId, String name) {
 		// TODO Auto-generated method stub
-		String URL = "http://localhost:8112/user/"+fileId;
+		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileId;
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(URL);
 		CloseableHttpResponse response;
 		try {
 			response = client.execute(httpGet);
 			HttpEntity entity = response.getEntity();
-			if(entity!=null)
+			int status = response.getStatusLine().getStatusCode();
+			if(status==200)
 			{
-				File targetFile = new File(name);
+				String filePath = MyDropboxSwing.urls+"/"+name;
+				Path path = Paths.get(filePath);
+				File targetFile = path.toFile();
 				InputStream stream = entity.getContent();
 				OutputStream out = new FileOutputStream(targetFile);
 				Date begin = new Date();
@@ -111,11 +123,20 @@ public class DownloadHTTP {
 				System.out.println("Ended: "+end.getTime());
 				out.close();
 			}
+			else 
+			{
+				System.out.println("File khong ton tai");
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+	public static void main(String [] args)
+	{
+		DownloadHTTP download = new DownloadHTTP();
+		download.downloadFile("95", "diff2");
 	}
 
 }

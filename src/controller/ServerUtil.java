@@ -33,4 +33,9 @@ public class ServerUtil {
 	      }
 	      return buf.toString();
 	 }
+	public static String convertPath(String fileFullPath, String fileParent)
+	{
+		String convert=fileFullPath.replaceAll(fileParent+"/", "");
+		return convert;
+	}
 }
