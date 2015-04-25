@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -19,7 +22,9 @@ import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import controller.ServerUtil;
 
@@ -39,7 +44,7 @@ public class XmlFactory {
 		String xpath = "//File[@name='" + fileName + "']";
 		try {
 			Node fileNode = dom.getNode(xpath);
-			
+
 			String idStr = fileNode.getAttributes().getNamedItem("id")
 					.getNodeValue();
 			fileId = Integer.parseInt(idStr);
@@ -86,7 +91,7 @@ public class XmlFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 	public void deleteNodeByFileId(int fileId)
 	{
@@ -122,8 +127,54 @@ public class XmlFactory {
 		System.out.println("File saved!");
 
 	}
-//	public static void main(String[] args) {
-//		XMLFactory fac = new XMLFactory();
-//		System.out.println(fac.getFileIdByFileName("new_name.js"));
-//	}
+	public List<FileChange>parseXML(Document doc)
+	{
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		NodeList nodes = doc.getElementsByTagName("Change");
+		List<FileChange> lst= new ArrayList<FileChange>();
+		for(int i = 0;i<nodes.getLength();i++)
+		{
+			Node node = nodes.item(i);
+			FileChange fileChange = null;
+			NamedNodeMap attrs=node.getAttributes();
+			String idStr = attrs.getNamedItem("id").getNodeValue();
+			int fileId = Integer.parseInt(idStr);
+			String isFileStr = attrs.getNamedItem("isFile").getNodeValue();
+			int isFile = Integer.parseInt(isFileStr);
+			String nameStr = attrs.getNamedItem("name").getNodeValue();
+			String tidStr = attrs.getNamedItem("tid").getNodeValue();
+			String timestampStr = attrs.getNamedItem("timestamp").getNodeValue();
+			Date timestamp=null;
+			try {
+				timestamp = format.parse(timestampStr);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String typeStr = attrs.getNamedItem("type").getNodeValue();
+			
+			if(typeStr.equals("Create"))
+			{
+				fileChange = new FileCreate(nameStr,isFile);
+			}
+			else if(typeStr.equals("Update"))
+			{
+				fileChange = new FileUpdate(nameStr,isFile);
+			}
+			else if(typeStr.equals("Delete"))
+			{
+				fileChange = new FileDelete(nameStr,isFile);
+			}
+			fileChange.setTid(tidStr);
+			fileChange.setFileId(fileId);
+			fileChange.setTimestamp(timestamp);
+			lst.add(fileChange);
+		}
+		return lst;
+	}
+	
+	//	public static void main(String[] args) {
+	//		XMLFactory fac = new XMLFactory();
+	//		System.out.println(fac.getFileIdByFileName("new_name.js"));
+	//	}
 }

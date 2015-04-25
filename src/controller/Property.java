@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import model.Constants;
+import mydropbox.MyDropboxSwing;
 
 public class Property {
 	public Properties getProperties()
@@ -74,5 +75,17 @@ public class Property {
 		}
 		
 		return prop;
+	}
+	public void write(String key,String value)
+	{
+		try {
+			OutputStream out = new FileOutputStream(Constants.FILEPROPNAME);
+			MyDropboxSwing.prop.setProperty(key, value);
+			MyDropboxSwing.prop.store(out, "config");
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import model.FileChange;
 import mydropbox.MyDropboxSwing;
+import controller.Property;
 import controller.TransactionHTTP;
 
 public class UploadAction implements ActionListener {
@@ -13,7 +14,8 @@ public class UploadAction implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		//Lay tid gan nhat
-		String tid = Integer.toString(TransactionHTTP.getTransaction()+1);
+		int tId = TransactionHTTP.getTransaction()+1;
+		String tid = Integer.toString(tId);
 		//Luu tid vao file property
 //		WriteXml write = new WriteXml(MyDropboxSwing.urls,tid);
 //		MyDropboxSwing.prop.setProperty("tid",tid);
@@ -32,7 +34,8 @@ public class UploadAction implements ActionListener {
 			fileChange.doAction();
 		}
 		MyDropboxSwing.lstCommit.clear();
-		MyDropboxSwing.prop.setProperty("TID", tid);
+		Property property = new Property();
+		property.write("tid", tid);
 	}
 
 }

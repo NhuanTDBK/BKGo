@@ -62,6 +62,7 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 	public static Properties prop;
 	public static DomRepresentation dom;
 	public static CopyOnWriteArrayList<FileChange> lstCommit;
+	public static FileAlterationMonitor watcher;
 	public static String protocol;
 	public static String address;
 	public static String port;
@@ -386,10 +387,11 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 
 		addNode(file, root);
 
-		// final File directory = new File("E:\\dropbox");
+		//Init observer
 		FileAlterationObserver fao = new FileAlterationObserver(file);
 		fao.addListener(new FileWatcher());
-		final FileAlterationMonitor watcher = new FileAlterationMonitor();
+		watcher = new FileAlterationMonitor();
+		//Watch Dropbox folder
 		watcher.addObserver(fao);
 		System.out.println("Starting monitor. Ctrc - C to stop");
 		try {

@@ -192,6 +192,10 @@ public class UploadHTTP {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		catch(NumberFormatException ex)
+		{
+			System.out.println("File da ton tai");
+		}
 		return fileId;
 	}
 	public static int uploadFile(String fileName,String tid)

@@ -21,6 +21,8 @@ import javax.xml.xpath.XPathFactory;
 
 import mydropbox.MyDropboxSwing;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -105,6 +107,7 @@ public class DownloadHTTP {
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(URL);
 		CloseableHttpResponse response;
+		final Long largeSize = 2L*FileUtils.ONE_GB;
 		try {
 			response = client.execute(httpGet);
 			HttpEntity entity = response.getEntity();
@@ -115,10 +118,13 @@ public class DownloadHTTP {
 				Path path = Paths.get(filePath);
 				File targetFile = path.toFile();
 				InputStream stream = entity.getContent();
-				OutputStream out = new FileOutputStream(targetFile);
+				OutputStream out = FileUtils.openOutputStream(targetFile);
 				Date begin = new Date();
 				System.out.println("Started: "+begin.getTime());
-				IOUtils.copy(stream, out);
+				if(entity.getContentLength()<largeSize)
+					IOUtils.copy(stream, out);
+				else 
+					IOUtils.copyLarge(stream, out);
 				Date end = new Date();
 				System.out.println("Ended: "+end.getTime());
 				out.close();

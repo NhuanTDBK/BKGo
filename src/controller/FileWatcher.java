@@ -45,7 +45,7 @@ public class FileWatcher implements FileAlterationListener {
 	public void onDirectoryCreate(File arg0) {
 		// TODO Auto-generated method stub
 		String directoryName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
-		log +="Directory is created "+ arg0.getName()+"\n";
+		log ="Directory is created "+ arg0.getName()+"\n";
 		System.out.println(log);
 		jTextArea1.append(log);
 		int tid = TransactionHTTP.getTransaction()+1;
@@ -57,7 +57,7 @@ public class FileWatcher implements FileAlterationListener {
 	public void onDirectoryDelete(File arg0) {
 		// TODO Auto-generated method stub
 		String directoryName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
-		log +="Directory is delete "+ arg0.getName()+"\n";
+		log ="Directory is delete "+ arg0.getName()+"\n";
 		System.out.println(log);
 		jTextArea1.append(log);
 		XmlFactory xml = new XmlFactory();
@@ -72,7 +72,7 @@ public class FileWatcher implements FileAlterationListener {
 		diffList.clear(); 
 		addAttr(urls);
 		//System.out.println("File is changed " + arg0.getAbsolutePath() + " and size: "+format.format(arg0.lastModified()));
-		log += "File is changed " + arg0.getAbsolutePath() + " and size: "+format.format(arg0.lastModified()) +"\n";
+		log = "File is changed " + arg0.getAbsolutePath() + " and size: "+format.format(arg0.lastModified()) +"\n";
 		String fileName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
 		System.out.println(log);
 		jTextArea1.append(log);
@@ -100,7 +100,7 @@ public class FileWatcher implements FileAlterationListener {
 				}
 				if(count == 0){
 					//System.out.println("File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).name);
-					log += "File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).fileName +"\n";
+					log = "File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).fileName +"\n";
 					System.out.println(log);
 					jTextArea1.append(log);
 
@@ -132,7 +132,7 @@ public class FileWatcher implements FileAlterationListener {
 				}
 				if(count == 0){
 					//System.out.println("File delete: "+list.get(i).fileParent+"/"+list.get(i).name);
-					log += "File delete: "+list.get(i).fileParent+"/"+list.get(i).fileName +"\n";
+					log = "File delete: "+list.get(i).fileParent+"/"+list.get(i).fileName +"\n";
 					System.out.println(log);
 					jTextArea1.append(log);
 					XmlFactory xml = new XmlFactory();
@@ -149,13 +149,14 @@ public class FileWatcher implements FileAlterationListener {
 	@Override
 	public void onStart(FileAlterationObserver arg0) {
 		// TODO Auto-generated method stub
-
+		System.out.println("Watcher is started");
+		
 	}
 
 	@Override
 	public void onStop(FileAlterationObserver arg0) {
 		// TODO Auto-generated method stub
-
+		System.out.println("Watcher is stopped");
 	}
 
 	public void compareArr(){
