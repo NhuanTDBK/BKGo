@@ -31,6 +31,8 @@ import mydropbox.MyDropboxSwing;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 
+import service.TransactionService;
+
 public class FileWatcher implements FileAlterationListener {
 
 	SimpleDateFormat format = new  SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -44,13 +46,14 @@ public class FileWatcher implements FileAlterationListener {
 	@Override
 	public void onDirectoryCreate(File arg0) {
 		// TODO Auto-generated method stub
-		String directoryName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
-		log ="Directory is created "+ arg0.getName()+"\n";
-		System.out.println(log);
-		jTextArea1.append(log);
-		int tid = TransactionHTTP.getTransaction()+1;
-		FileCreate fileCreate = new FileCreate(directoryName, Constants.IS_FOLDER);
-		lstCommit.add(fileCreate);
+		if(!Files.isSymbolicLink(arg0.toPath())){
+			String directoryName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
+			log ="Directory is created "+ arg0.getName()+"\n";
+			System.out.println(log);
+			jTextArea1.append(log);
+			FileCreate fileCreate = new FileCreate(directoryName, Constants.IS_FOLDER);
+			lstCommit.add(fileCreate);
+		}
 	}
 
 	@Override
@@ -60,9 +63,7 @@ public class FileWatcher implements FileAlterationListener {
 		log ="Directory is delete "+ arg0.getName()+"\n";
 		System.out.println(log);
 		jTextArea1.append(log);
-		XmlFactory xml = new XmlFactory();
-		int fileId = xml.getFileIdByFileName(directoryName);
-		FileDelete fileDelete = new FileDelete(fileId, directoryName, Constants.IS_FOLDER);
+		FileDelete fileDelete = new FileDelete(directoryName, Constants.IS_FOLDER);
 		lstCommit.add(fileDelete);
 //		DeleteHTTP.deleteFileByFileName(directoryName);
 	}
@@ -85,32 +86,35 @@ public class FileWatcher implements FileAlterationListener {
 	@Override
 	public void onFileCreate(File arg0) {
 		//System.out.println("File is created " + arg0.getAbsolutePath() + " and size: "+arg0.getUsableSpace());
-		diffList.clear();
-		addAttr(urls);
-		String fileName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
-		FileCreate fileCreate = new FileCreate(fileName,Constants.IS_FILE);
-		lstCommit.add(fileCreate);
-		if(diffList.size() > list.size()){
-			for(int i = 0 ; i<diffList.size(); i++){
-				int count = 0;
-				for(int j = 0; j<list.size(); j++){
-					if(list.get(j).fileKey.equals(diffList.get(i).fileKey)){
-						count++;
+		if(!Files.isSymbolicLink(arg0.toPath()))
+		{
+			diffList.clear();
+			addAttr(urls);
+			String fileName = ServerUtil.convertPath(arg0.getAbsolutePath(), MyDropboxSwing.urls);
+			FileCreate fileCreate = new FileCreate(fileName,Constants.IS_FILE);
+			lstCommit.add(fileCreate);
+			if(diffList.size() > list.size()){
+				for(int i = 0 ; i<diffList.size(); i++){
+					int count = 0;
+					for(int j = 0; j<list.size(); j++){
+						if(list.get(j).fileKey.equals(diffList.get(i).fileKey)){
+							count++;
+						}
+					}
+					if(count == 0){
+						//System.out.println("File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).name);
+						log = "File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).fileName +"\n";
+						System.out.println(log);
+						jTextArea1.append(log);
+
 					}
 				}
-				if(count == 0){
-					//System.out.println("File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).name);
-					log = "File create: "+diffList.get(i).fileParent+"/"+diffList.get(i).fileName +"\n";
-					System.out.println(log);
-					jTextArea1.append(log);
-
-				}
+			}else{
+				compareArr();
 			}
-		}else{
-			compareArr();
+			list.clear();
+			list.addAll(diffList);
 		}
-		list.clear();
-		list.addAll(diffList);
 	}
 
 	@Override

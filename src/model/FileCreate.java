@@ -1,22 +1,22 @@
 package model;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileAttribute;
 
 import mydropbox.MyDropboxSwing;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 
-import controller.DownloadHTTP;
-import controller.UploadHTTP;
+import service.DownloadService;
+import service.UploadService;
 
-public class FileCreate extends FileChange {
+public class FileCreate extends FileChange implements Runnable {
 
 
 	public FileCreate(String fileName,int isFile)
@@ -33,10 +33,10 @@ public class FileCreate extends FileChange {
 	public void doAction() {
 		int id=0;
 		if(this.getIsFile()==Constants.IS_FILE)
-			id = UploadHTTP.uploadFile(this.getFileName(),this.getTid());
+			id = UploadService.uploadFile(this.getFileName(),this.getTid());
 		else
 			try {
-				id = UploadHTTP.uploadDirectory(this.getFileName(), this.getTid());
+				id = UploadService.uploadDirectory(this.getFileName(), this.getTid());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -54,8 +54,16 @@ public class FileCreate extends FileChange {
 		// TODO Auto-generated method stub
 		if(this.getIsFile()==Constants.IS_FILE)
 		{
-			DownloadHTTP download = new DownloadHTTP();
+			DownloadService download = new DownloadService();
 			download.downloadFile(Integer.toString(this.getFileId()),this.getFileName());
+			File src = new File(MyDropboxSwing.tmpFolder+"/"+this.getFileName());
+			File dst = new File(MyDropboxSwing.urls+"/"+this.getFileName());
+			try {
+				FileUtils.moveFile(src, dst);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else
 		{
@@ -75,5 +83,14 @@ public class FileCreate extends FileChange {
 				e.printStackTrace();
 			}
 		}
+	}
+//	public void doUpdate(boolean temp)
+//	{
+//		
+//	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		this.doUpdate();
 	}
 }

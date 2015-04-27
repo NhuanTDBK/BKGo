@@ -12,8 +12,9 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,19 +33,18 @@ import model.FileAttr;
 import model.FileChange;
 import model.XmlFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.restlet.ext.xml.DomRepresentation;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import actionListener.SyncAction;
 import actionListener.UploadAction;
+import controller.AppConfig;
 import controller.FileWatcher;
 import controller.LoginForm;
-import controller.Property;
-import controller.WriteXml;
 
 /**
  *
@@ -58,7 +58,7 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 	public static String tid;
 	public static ArrayList<FileAttr> list;
     public static ArrayList<FileAttr> diffList;
-	public static Property property = new Property();
+	public static AppConfig property = new AppConfig();
 	public static Properties prop;
 	public static DomRepresentation dom;
 	public static CopyOnWriteArrayList<FileChange> lstCommit;
@@ -66,6 +66,7 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 	public static String protocol;
 	public static String address;
 	public static String port;
+	public static String tmpFolder;
 	/**
 	 * Creates new form MyDropboxSwing
 	 */
@@ -514,6 +515,7 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 	private javax.swing.JButton sign_in;
 	private javax.swing.JButton sync;
 	private javax.swing.JTextField username;
+	
 	// End of variables declaration//GEN-END:variables
 	@Override
 	public void windowActivated(WindowEvent e) {
@@ -565,13 +567,13 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 	}
 	public void loadXMLDoc()
 	{
-		WriteXml write = new WriteXml(urls);
-		try {
-			write.writexml(false);
-		} catch (DOMException | NoSuchAlgorithmException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		WriteXml write = new WriteXml(urls);
+//		try {
+//			write.writexml(false);
+//		} catch (DOMException | NoSuchAlgorithmException | IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		File index = new File(Constants.INDEXXML);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
@@ -593,5 +595,7 @@ public class MyDropboxSwing extends javax.swing.JFrame implements WindowListener
 		this.address = prop.getProperty("address");
 		this.port = prop.getProperty("port");
 		this.urls = prop.getProperty("urls");
+		this.tmpFolder = prop.getProperty("tmp");
+//		System.out.println();
 	}
 }

@@ -3,10 +3,10 @@ package actionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import service.TransactionService;
 import model.FileChange;
 import mydropbox.MyDropboxSwing;
-import controller.Property;
-import controller.TransactionHTTP;
+import controller.AppConfig;
 
 public class UploadAction implements ActionListener {
 
@@ -14,18 +14,9 @@ public class UploadAction implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		//Lay tid gan nhat
-		int tId = TransactionHTTP.getTransaction()+1;
+		int tId = TransactionService.getTransaction()+1;
 		String tid = Integer.toString(tId);
 		//Luu tid vao file property
-//		WriteXml write = new WriteXml(MyDropboxSwing.urls,tid);
-//		MyDropboxSwing.prop.setProperty("tid",tid);
-//		try {
-//			write.writexml();
-//		} catch (DOMException | NoSuchAlgorithmException | IOException ex) {
-//			// TODO Auto-generated catch block
-//			ex.printStackTrace();
-//		}
-	//	int tid = TransactionHTTP.getTransaction()+1;
 		System.out.println("Transaction: "+tid);
 		for(FileChange fileChange: MyDropboxSwing.lstCommit)
 		{
@@ -34,7 +25,7 @@ public class UploadAction implements ActionListener {
 			fileChange.doAction();
 		}
 		MyDropboxSwing.lstCommit.clear();
-		Property property = new Property();
+		AppConfig property = new AppConfig();
 		property.write("tid", tid);
 	}
 

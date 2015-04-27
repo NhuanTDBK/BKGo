@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import java.io.IOException;
 
@@ -14,10 +14,10 @@ import org.restlet.resource.ClientResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class DeleteHTTP {
+public class DeleteService {
 	public static void deleteFileById(int fileId)
 	{
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileId;
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+fileId;
 		HttpDelete deleteHTTP = new HttpDelete(URL);
 		CloseableHttpClient client = HttpClients.createDefault();
 		try {
@@ -29,7 +29,7 @@ public class DeleteHTTP {
 	}
 	public static void deleteFileByFileName(String fileName)
 	{
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileName;
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+fileName;
 		DomRepresentation dom=null;
 		try {
 			dom = new DomRepresentation();
@@ -56,7 +56,7 @@ public class DeleteHTTP {
 	}
 	public static void deleteFileByFileName(String fileName,String tid)
 	{
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileName+"@"+tid;
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+fileName+"@"+tid;
 		ClientResource client = new ClientResource(URL);
 		try{
 			client.delete();
@@ -70,7 +70,7 @@ public class DeleteHTTP {
 	}
 	public static void deleteFileByFileName(int fileId,String tid)
 	{
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileId+"@"+tid;
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+fileId+"@"+tid;
 		ClientResource client = new ClientResource(URL);
 		try{
 			client.delete();
@@ -82,8 +82,8 @@ public class DeleteHTTP {
 			ex.printStackTrace();
 		}
 	}
-	public static void main(String [] args)
-	{
-		deleteFileByFileName(60, "2");
-	}
+//	public static void main(String [] args)
+//	{
+//		deleteFileByFileName(60, "2");
+//	}
 }

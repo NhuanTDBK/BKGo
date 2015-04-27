@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,10 +33,13 @@ import org.restlet.resource.ClientResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class UploadHTTP {
+import controller.ServerUtil;
+
+public class UploadService {
+	
 	public static int uploadFile(File file,String fileName, String fileHash) throws IOException
 	{
-		String url = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/files/file";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/file";
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(url);
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -52,7 +55,7 @@ public class UploadHTTP {
 	public static int uploadDirectory(String directoryName) throws ClientProtocolException, IOException
 	{
 
-		String url = "http://localhost:8112/user/"+1+"/files/directory";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/directory";
 //		CloseableHttpClient client = HttpClients.createDefault();
 //		HttpPost httpPost = new HttpPost(url);
 //		StringEntity stringEntity = new StringEntity(directoryName);
@@ -71,7 +74,7 @@ public class UploadHTTP {
 	public static int uploadDirectory(String directoryName,String tid) throws ClientProtocolException, IOException
 	{
 
-		String url = "http://localhost:8112/user/"+1+"/files/directory";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/directory";
 //		CloseableHttpClient client = HttpClients.createDefault();
 //		HttpPost httpPost = new HttpPost(url);
 //		StringEntity stringEntity = new StringEntity(directoryName);
@@ -89,7 +92,7 @@ public class UploadHTTP {
 	}
 	public static int patchFile(int type,String tid, String oldName,String newName,Date timestamp)
 	{
-		String url = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+oldName;
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+oldName;
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPatch httpPatch = new HttpPatch(url);
 		DomRepresentation xml;
@@ -137,8 +140,7 @@ public class UploadHTTP {
 	public synchronized int uploadFile(String fileName,String fileHash,String tid)
 	{
 		
-		String url = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/files/file";
-		//String url = "http://localhost:8112/user/"+1+"/files/file";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/file";
 		DomRepresentation xml;
 		String filePath = MyDropboxSwing.urls+"/"+fileName;
 		File file = new File(filePath);
@@ -200,7 +202,7 @@ public class UploadHTTP {
 	}
 	public static int uploadFile(String fileName,String tid)
 	{
-		String url = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/files/file";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/file";
 		DomRepresentation xml;
 		File file = new File(MyDropboxSwing.urls+"/"+fileName);
 		String fileHash=null;

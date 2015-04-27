@@ -27,6 +27,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import service.UploadService;
+
 /**
  *
  * @author hoàng
@@ -73,7 +75,7 @@ public class WriteXml {
 			int fileId = 0;
 			try
 			{
-				UploadHTTP upload = new UploadHTTP();
+				UploadService upload = new UploadService();
 				fileId = upload.uploadFile(fileName, fileHash,tid);
 			}
 			catch(Exception ex)
@@ -101,7 +103,7 @@ public class WriteXml {
 					int fileId = 0;
 					try
 					{
-						fileId = UploadHTTP.uploadDirectory(directoryName);
+						fileId = UploadService.uploadDirectory(directoryName);
 					}
 					catch(Exception ex)
 					{

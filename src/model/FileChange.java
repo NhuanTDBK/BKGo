@@ -2,7 +2,7 @@ package model;
 
 import java.util.Date;
 
-public abstract class FileChange {
+public abstract class FileChange implements Runnable{
 
 	private int fileChangeId;
 	private int fileId;

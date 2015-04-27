@@ -5,16 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 import model.Constants;
 import mydropbox.MyDropboxSwing;
 
-public class Property {
+import org.apache.commons.io.FileUtils;
+
+public class AppConfig {
 	public Properties getProperties()
 	{
 		Properties prop = new Properties();
@@ -56,10 +55,12 @@ public class Property {
 			prop.setProperty("address", "localhost");
 			prop.setProperty("port", "8112");
 			String userDirectory = System.getProperty("user.home")+"/Dropbox";
+			String tmpDirectory = FileUtils.getTempDirectory()+"/Dropbox";
 			File file = new File(userDirectory);
 			try{
 				file.mkdir();
 				prop.setProperty("urls", userDirectory);
+				prop.setProperty("tmpFolder", tmpDirectory);
 			}catch(SecurityException ex)
 			{
 				System.out.print("Khong co quyen tao folder");

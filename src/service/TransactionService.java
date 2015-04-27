@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,11 +12,11 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.w3c.dom.Document;
 
-public class TransactionHTTP {
+public class TransactionService {
 	public static int getTransaction()
 	{
 		int tid = 0;
-		String url = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/transaction";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/transaction";
 		ClientResource client = new ClientResource(url);
 		try{
 			DomRepresentation dom = new DomRepresentation(client.get());
@@ -31,7 +31,7 @@ public class TransactionHTTP {
 	public DomRepresentation getSync(String tid)
 	{
 		DomRepresentation dom=null;
-		String url = "http://localhost:8112/user/"+1+"/sync/0";
+		String url = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/sync/0";
 		ClientResource client = new ClientResource(url);
 		try{
 			dom = new DomRepresentation(client.get());

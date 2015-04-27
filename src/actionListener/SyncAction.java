@@ -3,19 +3,21 @@ package actionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
-import org.restlet.ext.xml.DomRepresentation;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-
-import controller.DownloadHTTP;
-import controller.TransactionHTTP;
-import controller.WriteXml;
 import model.FileChange;
 import model.XmlFactory;
 import mydropbox.MyDropboxSwing;
+
+import org.restlet.ext.xml.DomRepresentation;
+import org.w3c.dom.Document;
+
+import service.TransactionService;
 
 public class SyncAction implements ActionListener {
 
@@ -34,7 +36,7 @@ public class SyncAction implements ActionListener {
 		//Neu co, bao conflict
 		//thuc hien doUpdate
 		//Update xong, khoi dong lai watcher
-		TransactionHTTP transactionHTTP = new TransactionHTTP();
+		TransactionService transactionHTTP = new TransactionService();
 		DomRepresentation dom = transactionHTTP.getSync(tid);
 		XmlFactory factory = new XmlFactory(dom);
 		Document doc=null;

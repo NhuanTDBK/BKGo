@@ -78,6 +78,7 @@ public class XmlFactory {
 			{
 				fileNode = doc.createElement("Directory");
 				fileNode.setAttribute("name", fileChange.getFileName());
+				fileNode.setAttribute("id",Integer.toString(fileChange.getFileId()));
 			}
 			Node root = doc.getFirstChild();
 			root.appendChild(fileNode);

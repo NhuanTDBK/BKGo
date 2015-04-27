@@ -7,10 +7,10 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import service.DeleteService;
 import mydropbox.MyDropboxSwing;
-import controller.DeleteHTTP;
 
-public class FileDelete extends FileCreate {
+public class FileDelete extends FileCreate implements Runnable{
 
 	public FileDelete(String fileName, int isFile) {
 		super(fileName, isFile);
@@ -30,7 +30,7 @@ public class FileDelete extends FileCreate {
 		XmlFactory factory = new XmlFactory(MyDropboxSwing.dom);
 		int fileId = factory.getFileIdByFileName(this.getFileName());
 		this.setFileId(fileId);
-		DeleteHTTP.deleteFileByFileName(this.getFileId(), this.getTid());
+		DeleteService.deleteFileByFileName(this.getFileId(), this.getTid());
 		;
 		// Xoa the file trong index xml
 		factory.deleteNodeByFileId(fileId);
@@ -54,6 +54,12 @@ public class FileDelete extends FileCreate {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		this.doUpdate();
 	}
 
 }

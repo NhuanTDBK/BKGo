@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,11 +35,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class DownloadHTTP {
+public class DownloadService {
 
 	public void getAll() throws IllegalStateException, IOException {
 		// TODO Auto-generated method stub
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/files/all";
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/files/all";
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(URL);
 		CloseableHttpResponse response = client.execute(httpGet);
@@ -103,7 +103,7 @@ public class DownloadHTTP {
 	 */
 	public void downloadFile(String fileId, String name) {
 		// TODO Auto-generated method stub
-		String URL = "http://localhost:8112/user/"+MyDropboxSwing.userId+"/file/"+fileId;
+		String URL = MyDropboxSwing.protocol+"://"+MyDropboxSwing.address+":"+MyDropboxSwing.port+"/user/"+MyDropboxSwing.userId+"/file/"+fileId;
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(URL);
 		CloseableHttpResponse response;
@@ -114,7 +114,7 @@ public class DownloadHTTP {
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200)
 			{
-				String filePath = MyDropboxSwing.urls+"/"+name;
+				String filePath = MyDropboxSwing.tmpFolder+"/"+name;
 				Path path = Paths.get(filePath);
 				File targetFile = path.toFile();
 				InputStream stream = entity.getContent();
@@ -141,7 +141,7 @@ public class DownloadHTTP {
 	}
 	public static void main(String [] args)
 	{
-		DownloadHTTP download = new DownloadHTTP();
+		DownloadService download = new DownloadService();
 		download.downloadFile("95", "diff2");
 	}
 
