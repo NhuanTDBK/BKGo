@@ -32,8 +32,10 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.ext.fileupload.RestletFileUpload;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import utils.ClientUtils;
 import utils.Constants;
@@ -145,8 +147,23 @@ public class FileUploadController extends Restlet {
 
 						FileCursor currentCursor = new FileCursor(fileChange.getTid(),fileChange.getFileChangeId());
 						TransactionController.memCached.put(Integer.toString(userId), currentCursor);
-						String result = fs.getFileId()+"@"+fileChange.getFileChangeId();
-						response.setEntity(new StringRepresentation(result));	
+//						String result = fs.getFileId()+"@"+fileChange.getFileChangeId();
+//						response.setEntity(new StringRepresentation(result));	
+						DomRepresentation xml = new DomRepresentation();
+						xml.setIndenting(true);
+						Document doc = xml.getDocument();
+
+						Node userNode = doc.createElement("File");
+						doc.appendChild(userNode);
+
+						Node fileIdNode = doc.createElement("FileId");
+						fileIdNode.setTextContent(Integer.toString(fs.getFileId()));
+						userNode.appendChild(fileIdNode);
+						
+						Node fileChangeIdNode = doc.createElement("FileChangeId");
+						fileChangeIdNode.setTextContent(Integer.toString(fileChange.getFileChangeId()));
+						userNode.appendChild(fileChangeIdNode);
+						response.setEntity(xml);
 						//Hien thi log
 					}
 				} catch (FileUploadException | NoSuchAlgorithmException | IOException e) {

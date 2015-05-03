@@ -11,8 +11,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
 
-import model.DBUtils;
-
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
@@ -25,17 +23,21 @@ import utils.Constants;
 public class ServerFrame extends javax.swing.JFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6425932400174207220L;
+	/**
      * Creates new form ServerFrame
      */
     public ServerFrame() {
         initComponents();
-        DBUtils db = new DBUtils();
+//        DBUtils db = new DBUtils();
         final Runtime runtime = Runtime.getRuntime();
         memoryUsage.setMaximum(100);
         memoryUsage.setMinimum(0);
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, Constants.PORT);
-        StartServer server = new StartServer();
+        RoutingConfig server = new RoutingConfig();
         component.getDefaultHost().attach("", server);
         component.setAuthor("Nhuan TD");
         component.setName("Dropbox");

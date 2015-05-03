@@ -10,7 +10,7 @@ import controller.UploadController;
 import controller.UserController;
 import controller.VersionController;
 
-public class StartServer extends Application {
+public class RoutingConfig extends Application {
 
     @Override
     public Restlet createInboundRoot() {
