@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Changes>
+	<Change TID = "1" FileId="43" FileName="Submitting Applications - Spark 1.1.0 Documentation_files/main.js" Timestamp="04/19/2015 17:59:52" Type="Create"/>
+	<Change TID = "1" FileId="52" FileName="power~" Timestamp="04/19/2015 17:59:52" Type="Create"/>
+	<Change TID = "1" FileId="54" FileName="tmp_t/install" Timestamp="04/19/2015 17:59:53" Type="Create"/>
+	<Change TID = "1" FileId="55" FileName="tmp_t/bootstrap.min.js" Timestamp="04/19/2015 17:59:53" Type="Create"/>
+	<Change TID = "1" FileId="56" FileName="tmp_t/weka.log" Timestamp="04/19/2015 17:59:53" Type="Create"/>
+	<Change TID = "1" FileId="58" FileName="tmp_t/phantomjs/phantomjs-1.9.8-linux-x86_64.tar.bz2" Timestamp="04/19/2015 17:59:58" Type="Create"/>
+	<Change TID = "1" FileId="60" FileName="new_name.js" Timestamp="04/19/2015 17:59:51" Type="Create"/>
+	<Change TID = "2" FileId="61" OldName="new_name.js" NewName="newest_name.js" Timestamp="04/19/2015 17:59:51" Type="Rename"/>	
+	<Change TID = "3 "FileId="62" FileName="tmp_t/weka.log" Timestamp="04/19/2015 19:59:51" Type="Update"/>
+	<Change TID = "4" FileId="62" FileName="tmp_t/weka.log" Timestamp="04/19/2015 19:59:51" Type="Delete"/>
+	<Change TID = "4" FileId="55" FileName="tmp_t/bootstrap.min.js" Timestamp="04/19/2015 20:59:51" Type="Delete"/>
+</Changes>
