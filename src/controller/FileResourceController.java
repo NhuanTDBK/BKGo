@@ -23,6 +23,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.StringRepresentation;
 import org.w3c.dom.Document;
 
 import utils.Constants;
@@ -78,6 +79,7 @@ public class FileResourceController extends Restlet {
 			try{
 				List<FileStorage> files = FileStorageDAO.getFileByFileName(fileName);
 				List<FileChange> fileChangeLst = new ArrayList<FileChange>();
+				int index = 0;
 				for(FileStorage file:files)
 				{
 					FileChange fileChange = new FileChange();
@@ -92,11 +94,13 @@ public class FileResourceController extends Restlet {
 					
 					//fileChangeLst.add(fileChange);
 					fileChangeDao.insertFile(fileChange,true);
+					index = fileChange.getFileChangeId();
 					FileCursor currentCursor = new FileCursor(fileChange.getTid(),fileChange.getFileChangeId());
 					TransactionController.memCached.put(userIdStr, currentCursor);
 				}	
 				//FileChangeDAO.insertList(fileChangeLst);
 				FileStorageDAO.deleteFileByFileName(fileName);
+				response.setEntity(new StringRepresentation(Integer.toString(index)));
 				response.setStatus(Status.SUCCESS_OK);
 			}	
 			catch(Exception ex)

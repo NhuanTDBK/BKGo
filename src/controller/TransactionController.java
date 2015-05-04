@@ -92,11 +92,19 @@ public class TransactionController extends Restlet{
 						serverCursor.toString();
 						if(clientCursor.compareTo(serverCursor)<0)
 						{
-							List<FileChange> lstResponse = FileChangeDAO.getUpdate(tid, Integer.parseInt(index));
+							List<FileChange> lstResponse = FileChangeDAO.getUpperByTransactionId(tid, Integer.parseInt(index));
 							XMLFactory fileChangeFactory = new XMLFactory();
-							DomRepresentation dom = fileChangeFactory.getUpperByTransactionId(lstResponse);
-							response.setEntity(dom);
-							response.setStatus(Status.SUCCESS_OK);
+							if(!lstResponse.isEmpty())
+							{
+								DomRepresentation dom = fileChangeFactory.getUpperByTransactionId(lstResponse);
+								response.setEntity(dom);
+								response.setStatus(Status.SUCCESS_OK);
+							}
+							else 
+							{
+								response.setEntity("Latest version", MediaType.TEXT_PLAIN);
+								response.setStatus(Status.SUCCESS_OK);
+							}
 						}
 						else
 						{
