@@ -9,14 +9,16 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+
 import utils.Constants;
 
 public class FileStorageDAO {
 	public static SessionFactory getSession() {
 		return DBUtils.getSessionFactory();
 	}
+	@SuppressWarnings("unchecked")
 	public static List<FileStorage> getAll() {
-		Session session = getSession().openSession();
+		Session session = getSession().getCurrentSession();
 		List<FileStorage> files = session.createQuery(
 				"FROM FileStorage f WHERE f.isActive = 1").list();
 		System.out.println("Retrieve successful");
@@ -116,7 +118,8 @@ public class FileStorageDAO {
 			query = session.createQuery(SQL);
 			query.setParameter("fileName", fileName);
 			query.setParameter("fileHash", fileHash);
-			List l = query.list();
+			@SuppressWarnings("unchecked")
+			List<FileStorage> l = query.list();
 			if (!l.isEmpty())
 				found = true;
 		} catch (HibernateException ex) {
@@ -167,6 +170,27 @@ public class FileStorageDAO {
 			lst = query.list();
 			System.out.println("Khong tim thay ten file");
 			System.out.println("Retrieve file version by name");
+		} catch (HibernateException ex) {
+
+			System.out.println("Error ");
+			ex.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+		return lst;
+	}
+	public static List<FileStorage> getFileDelete(int userId) {
+		boolean found = false;
+		Session session = getSession().openSession();
+		Query query = null;
+		List<FileStorage>lst = null;
+		try {
+			String SQL = "FROM FileStorage f WHERE f.isActive = 0 and f.userId = :userId";
+			query = session.createQuery(SQL);
+			query.setParameter("userId", userId);
+			lst = query.list();
+			System.out.println("Retrieve file delete ");
 		} catch (HibernateException ex) {
 
 			System.out.println("Error ");

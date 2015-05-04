@@ -37,6 +37,7 @@ import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import frame.ServerFrame;
 import utils.ClientUtils;
 import utils.Constants;
 import utils.ServerUtil;
@@ -57,6 +58,7 @@ public class FileUploadController extends Restlet {
 	@Override
 	public void handle(Request request, Response response) {
 		// TODO Auto-generated method stub
+		
 		Method method = request.getMethod();
 
 		String ipAddressString = request.getClientInfo().getAddress();
@@ -103,7 +105,7 @@ public class FileUploadController extends Restlet {
 						String fileRealPath = ServerUtil.encryptMessage(fileName+"_version_"+version);
 						System.out.println(fileName);
 						//Ghi file
-						String path = "storage/"+userId+"/"+fileName;
+						String path = "storage/"+userId+"/"+fileRealPath;
 						Path filePath = Paths.get(path);
 						File f = filePath.toFile();
 						if(fi.getSize()<2*FileUtils.ONE_GB)
@@ -164,6 +166,7 @@ public class FileUploadController extends Restlet {
 						fileChangeIdNode.setTextContent(Integer.toString(fileChange.getFileChangeId()));
 						userNode.appendChild(fileChangeIdNode);
 						response.setEntity(xml);
+						ServerFrame.logArea.append("File "+fileName+" upload from "+ipAddressString);
 						//Hien thi log
 					}
 				} catch (FileUploadException | NoSuchAlgorithmException | IOException e) {

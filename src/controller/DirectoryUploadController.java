@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import model.FileChange;
 import model.FileChangeDAO;
@@ -18,16 +17,18 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.representation.StringRepresentation;
 
+import frame.ServerFrame;
 import utils.Constants;
-import utils.ServerUtil;
 
 public class DirectoryUploadController extends Restlet {
 
 	@Override
 	public void handle(Request request, Response response) {
 		// TODO Auto-generated method stub
-		Method method = request.getMethod();
+				Method method = request.getMethod();
 		String ipAddressString = request.getClientInfo().getAddress();
+		ServerFrame.logArea.append("Create directory from "+ipAddressString);
+
 		String userIdStr = (String) request.getAttributes().get("userId");
 		String tid = request.getHeaders().getFirst("X-TID").getValue();
 		System.out.println(tid);

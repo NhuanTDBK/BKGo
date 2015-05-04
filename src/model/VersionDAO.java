@@ -15,7 +15,7 @@ public class VersionDAO {
     public static SessionFactory getSession() {
     	return DBUtils.getSessionFactory();
     }
-
+    
     public static List<Version> getAll() {
         Session session = getSession().openSession();
         List<Version> version = session.createQuery("FROM Version").list();
@@ -29,10 +29,11 @@ public class VersionDAO {
         Version version = null;
         try {
             version = (Version) session.get(Version.class, fileId);
+            session.close();
         } catch (HibernateException ex) {
             return version;
         } finally {
-            session.close();
+            
         }
         return null;
     }
@@ -66,9 +67,14 @@ public class VersionDAO {
             Query query = session.createQuery("FROM Version v WHERE v.fileName =:fileName");
             query.setParameter("fileName", name);
             lstVersion = query.list();
+            session.close();
             return lstVersion;
         } catch (HibernateException ex) {
             return null;
+        }
+        finally
+        {
+        	 
         }
     }
 

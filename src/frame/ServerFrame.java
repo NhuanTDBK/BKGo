@@ -8,11 +8,15 @@ package frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JProgressBar;
 import javax.swing.Timer;
 
 import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.Server;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.ext.jetty.HttpServerHelper;
+import org.restlet.util.Series;
 
 import utils.Constants;
 
@@ -37,11 +41,24 @@ public class ServerFrame extends javax.swing.JFrame {
         memoryUsage.setMinimum(0);
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, Constants.PORT);
+        //Server s = new Server(Protocol.HTTP, Constants.PORT);
+        //HttpServerHelper httpServerHelper = new HttpServerHelper(s);
+        //System.out.println(httpServerHelper.getThreadPoolMaxThreads());
         RoutingConfig server = new RoutingConfig();
+        //component.getServers().add(httpServerHelper.getHelped());
         component.getDefaultHost().attach("", server);
         component.setAuthor("Nhuan TD");
         component.setName("Dropbox");
-        
+        component.getContext().getParameters().add("maxThreads", "512"); 
+
+//        Series<Parameter>param = component.getContext().getParameters();   
+//        System.out.println("size : "+param.size());
+//        for(Parameter p: param)
+//        {
+//        	String log = "Key: "+p.getName()+ ": "+p.getValue()+"\n";
+////        	logArea.append(log);
+//        	System.out.println(log);
+//        }
         try {
             component.start();
             System.out.println("Server is running!!!!");

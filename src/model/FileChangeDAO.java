@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,9 +12,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Projections;
+import org.hibernate.type.StandardBasicTypes;
 
 import controller.NotificationController;
 
@@ -98,7 +98,7 @@ public class FileChangeDAO extends Observable {
 			String queryStr = "select USER_ID as userId, TID as tid, MAX(FILE_CHANGE_ID) as fileChangeId, timestamp from FILE_CHANGE group by USER_ID, TID having fileChangeId >= (select MAX(FILE_CHANGE_ID) from FILE_CHANGE group by USER_ID)";
 			Query query = session
 					.createSQLQuery(queryStr)
-									.addScalar("userId").addScalar("tid").addScalar("fileChangeId");
+					.addScalar("userId").addScalar("tid").addScalar("fileChangeId");
 
 			list = query.list();
 		} catch (HibernateException ex) {
@@ -114,6 +114,11 @@ public class FileChangeDAO extends Observable {
 				String indexStr = rows[2].toString();
 				result.put(userId, new FileCursor(tidStr, indexStr));
 			}
+		else
+
+		{
+			result.put("1", new FileCursor("0","0"));
+		}
 		return result;
 	}
 
@@ -126,10 +131,10 @@ public class FileChangeDAO extends Observable {
 			session.save(file);
 			tx.commit();
 			System.out.println("Insert file change successful");
-		
-			
+
+
 		} catch (HibernateException ex) {
-			
+
 			tx.rollback();
 			result = false;
 			ex.printStackTrace();
@@ -194,7 +199,7 @@ public class FileChangeDAO extends Observable {
 		list = query.list();
 		if (list.size() == 0)
 			return null;
-
+		session.close();
 		return list;
 	}
 
@@ -221,11 +226,11 @@ public class FileChangeDAO extends Observable {
 		return lstFileChange;
 	}
 
-	public static void main(String[] args) {
-		@SuppressWarnings("rawtypes")
-		List<FileChange> lst = getUpperByTransactionId(5, 24);
-		System.out.println(lst==null?"khong co du lieu":"co du lieu");
-	}
+	//	public static void main(String[] args) {
+	//		@SuppressWarnings("rawtypes")
+	//		List<FileChange> lst = getUpperByTransactionId(5, 24);
+	//		System.out.println(lst==null?"khong co du lieu":"co du lieu");
+	//	}
 
 	public static void insertList(List<FileChange> fileChangeLst) {
 		// TODO Auto-generated method stub
@@ -241,5 +246,88 @@ public class FileChangeDAO extends Observable {
 			tx.commit();
 			session.close();
 		}
+	}
+	@SuppressWarnings("unchecked")
+	public static List<FileChange> getUpdate()
+	{
+		List<Object[]> list = null;
+		List<FileChange> lstFileChange = new ArrayList<FileChange>();
+		Session session = getSession().openSession();
+		try {
+			String queryStr = "select FILE_CHANGE_ID as fci, TID as tid, max(TYPE) as type, FILE_ID as fileId, TIMESTAMP as timestamp, IS_FILE as isFile, FILE_NAME as fileName "
+					+ "from FILE_CHANGE WHERE FILE_ID not in (select FILE_ID from FILE_CHANGE WHERE TYPE = 0) group by FILE_NAME";
+			Query query = session.createSQLQuery(queryStr)
+					.addScalar("fci", StandardBasicTypes.INTEGER)
+					.addScalar("tid", StandardBasicTypes.INTEGER)
+					.addScalar("type", StandardBasicTypes.INTEGER)
+					.addScalar("timestamp", StandardBasicTypes.STRING)
+					.addScalar("isFile", StandardBasicTypes.INTEGER)
+					.addScalar("fileName", StandardBasicTypes.STRING)
+					;
+			list = query.list();
+		} catch (HibernateException ex) {
+			ex.printStackTrace();
+		} finally {
+			session.close();
+		}
+		List lst = new ArrayList();
+		FileChange file = null;
+		if (list.size() != 0)
+			for (Object[] rows : list) {
+				file = new FileChange();
+				file.setFileChangeId((int)rows[0]);
+				file.setTid((int)rows[1]);
+				file.setType((int)rows[2]);
+				Date date = new Date((String)rows[3]);
+				file.setTimestamp(date);
+				file.setIsFile((int)rows[4]);
+				file.setFileName((String)rows[5]);
+			}
+		return lstFileChange;
+	}
+	public static List<FileChange> getUpdate(int tid, int index)
+	{
+		List<Object[]> list = null;
+		List<FileChange> lstFileChange = new ArrayList<FileChange>();
+		Session session = getSession().openSession();
+		try {
+			String queryStr = "select FILE_CHANGE_ID as fci, TID as tid, max(TYPE) as type, FILE_ID as fileId, TIMESTAMP as timestamp, IS_FILE as isFile, FILE_NAME as fileName "
+					+ "from FILE_CHANGE WHERE TID > :tid and FILE_CHANGE_ID > :index and FILE_ID not in (select FILE_ID from FILE_CHANGE WHERE TYPE = 0 AND TID > :tid and FILE_CHANGE_ID > :index) group by FILE_NAME";
+			Query query = session.createSQLQuery(queryStr)
+					.addScalar("fci", StandardBasicTypes.INTEGER)
+					.addScalar("tid", StandardBasicTypes.INTEGER)
+					.addScalar("type", StandardBasicTypes.INTEGER)
+					.addScalar("fileId",StandardBasicTypes.INTEGER)
+					.addScalar("timestamp", StandardBasicTypes.DATE)
+					.addScalar("isFile", StandardBasicTypes.INTEGER)
+					.addScalar("fileName", StandardBasicTypes.STRING)
+					.setParameter("tid", tid)
+					.setParameter("index", index);
+			list = query.list();
+		} catch (HibernateException ex) {
+			ex.printStackTrace();
+		} finally {
+			session.close();
+		}
+		FileChange file = null;
+		if (list.size() != 0)
+			for (Object[] rows : list) {
+				file = new FileChange();
+				file.setFileChangeId(Integer.parseInt(rows[0].toString()));
+				file.setTid(Integer.parseInt(rows[1].toString()));
+				file.setType(Integer.parseInt(rows[2].toString()));
+				file.setFileId(Integer.parseInt(rows[3].toString()));
+				java.sql.Date date = (java.sql.Date)rows[4];
+				Date d = new Date(date.getTime());
+				file.setTimestamp(date);
+				file.setIsFile((int)rows[5]);
+				file.setFileName((String)rows[6]);
+				lstFileChange.add(file);
+			}
+		return lstFileChange;
+	}
+	public static void main(String [] args)
+	{
+		getUpdate(1,1);
 	}
 }

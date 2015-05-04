@@ -93,8 +93,12 @@ public class UserDAO {
 		// TODO Auto-generated method stub
 		Session session = getSession().openSession();
 		User user = (User)session.get(User.class, userId);
-		if(user==null)
-			return false;
+		boolean result = false;
+		if(user!=null)
+		{
+			result = true;
+		}
+		session.close();
 		return true;
 	}
 	public static User getUserByName(String userName)

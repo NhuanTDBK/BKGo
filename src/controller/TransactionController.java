@@ -6,9 +6,9 @@ import java.util.List;
 
 import model.FileChange;
 import model.FileChangeDAO;
-import model.FileChangeFactory;
 import model.FileCursor;
 import model.MemCached;
+import model.XMLFactory;
 
 import org.hibernate.HibernateException;
 import org.restlet.Request;
@@ -37,13 +37,17 @@ public class TransactionController extends Restlet{
 		{
 			if(method.equals(Method.GET))
 			{
-
 				int latestTransaction=0;
 				int index=0;
 				try{
-					List lst = FileChangeDAO.getCursor();
-					latestTransaction =Integer.parseInt(lst.get(0).toString());
-					index = Integer.parseInt(lst.get(1).toString());
+					try{
+						List lst = FileChangeDAO.getCursor();
+						latestTransaction =Integer.parseInt(lst.get(0).toString());
+						index = Integer.parseInt(lst.get(1).toString());
+					}catch(IndexOutOfBoundsException ex)
+					{
+
+					}
 					DomRepresentation xml = new DomRepresentation();
 					xml.setIndenting(true);
 					Document doc = xml.getDocument();
@@ -63,32 +67,48 @@ public class TransactionController extends Restlet{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+				}
+				catch(IndexOutOfBoundsException ex)
+				{
+					ex.printStackTrace();
+					response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
 				}
 			}
 			else
 			{
 				try {
 					String requestStr = request.getEntity().getText();
-					List<String> lst = ServerUtil.getToken(requestStr);
-					String tidStr = lst.get(0);
-					int tid = Integer.parseInt(tidStr);
-					String index = lst.get(1);
-					FileCursor clientCursor = new FileCursor(tidStr, index);
-					FileCursor serverCursor = memCached.get(userIdStr);
-					serverCursor.toString();
-					if(clientCursor.compareTo(serverCursor)<0)
+					String tidStr;
+					String index;
+					int tid = 0;
+					try{
+						List<String> lst = ServerUtil.getToken(requestStr);
+						tidStr = lst.get(0);
+						tid = Integer.parseInt(tidStr);
+						index = lst.get(1);
+						FileCursor clientCursor = new FileCursor(tidStr, index);
+						FileCursor serverCursor = memCached.get(userIdStr);
+						serverCursor.toString();
+						if(clientCursor.compareTo(serverCursor)<0)
+						{
+							List<FileChange> lstResponse = FileChangeDAO.getUpdate(tid, Integer.parseInt(index));
+							XMLFactory fileChangeFactory = new XMLFactory();
+							DomRepresentation dom = fileChangeFactory.getUpperByTransactionId(lstResponse);
+							response.setEntity(dom);
+							response.setStatus(Status.SUCCESS_OK);
+						}
+						else
+						{
+							response.setEntity("Latest version", MediaType.TEXT_PLAIN);
+							response.setStatus(Status.SUCCESS_OK);
+						}
+					}catch(IndexOutOfBoundsException ex)
 					{
-						List<FileChange> lstResponse = FileChangeDAO.getUpperByTransactionId(tid, Integer.parseInt(index));
-						FileChangeFactory fileChangeFactory = new FileChangeFactory();
-						DomRepresentation dom = fileChangeFactory.getUpperByTransactionId(lstResponse);
-						response.setEntity(dom);
-						response.setStatus(Status.SUCCESS_OK);
+
+						response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					}
-					else
-					{
-						response.setEntity("Latest version", MediaType.TEXT_PLAIN);
-						response.setStatus(Status.SUCCESS_OK);
-					}
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					response.setEntity(new StringRepresentation(e.getMessage()));
@@ -101,7 +121,7 @@ public class TransactionController extends Restlet{
 		else
 		{
 			String tid = (String) request.getAttributes().get("tid");
-			FileChangeFactory factory = new FileChangeFactory();
+			XMLFactory factory = new XMLFactory();
 			try{
 				DomRepresentation dom = factory.getUpperByTransactionId(tid);
 				if(dom!=null)

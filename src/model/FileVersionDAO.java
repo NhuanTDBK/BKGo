@@ -26,12 +26,14 @@ public class FileVersionDAO {
 	{
 		Session session = getSession().openSession();
 		FileVersion file = (FileVersion)session.get(FileVersion.class, fileId);
+		session.close();
 		return file;
 	}
 	public static FileVersion getById(int fileId,int userId)
 	{
 		Session session = getSession().openSession();
 		FileVersion file = (FileVersion)session.get(FileVersion.class, fileId);
+		session.close();
 		return file;
 	}
 	public static FileVersion getByFileName(String fileName)
@@ -55,6 +57,10 @@ public class FileVersionDAO {
 		{
 			System.out.println("Khong tim thay ten file");
 			e.printStackTrace();
+		}
+		finally
+		{
+			session.close();
 		}
 		return file;
 	}

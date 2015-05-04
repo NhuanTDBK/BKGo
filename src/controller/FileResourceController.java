@@ -26,6 +26,7 @@ import org.restlet.representation.FileRepresentation;
 import org.w3c.dom.Document;
 
 import utils.Constants;
+import frame.ServerFrame;
 
 public class FileResourceController extends Restlet {
 
@@ -47,6 +48,7 @@ public class FileResourceController extends Restlet {
 				try {
 //					FileVersion fileVersion = FileVersionDAO
 //							.getById(fileId);
+					ServerFrame.logArea.append("Download file from "+ipAddressString);
 					FileStorage fileStorage = FileStorageDAO
 							.getById(fileId);
 					File file = new File(fileStorage.getFileRealPath());
@@ -72,6 +74,7 @@ public class FileResourceController extends Restlet {
 			String tid = request.getHeaders().getFirst("X-TID").getValue();
 			FileStorage fileStorage = FileStorageDAO.getById(fileId);
 			String fileName = fileStorage.getFileName();
+			ServerFrame.logArea.append("Delete file "+fileName+" from "+ipAddressString);
 			try{
 				List<FileStorage> files = FileStorageDAO.getFileByFileName(fileName);
 				List<FileChange> fileChangeLst = new ArrayList<FileChange>();
@@ -91,7 +94,7 @@ public class FileResourceController extends Restlet {
 					fileChangeDao.insertFile(fileChange,true);
 					FileCursor currentCursor = new FileCursor(fileChange.getTid(),fileChange.getFileChangeId());
 					TransactionController.memCached.put(userIdStr, currentCursor);
-				}
+				}	
 				//FileChangeDAO.insertList(fileChangeLst);
 				FileStorageDAO.deleteFileByFileName(fileName);
 				response.setStatus(Status.SUCCESS_OK);

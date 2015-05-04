@@ -50,13 +50,15 @@ public class UploadController extends Restlet {
 		try
 		{
 			userId = Integer.parseInt(userIdStr);
-			boolean checkUserId = TransactionController.memCached.getUserTransaction().containsKey(userIdStr);
-			if(checkUserId==false)
-			{
-				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-				response.setEntity(new StringRepresentation("User id sai"));
-				return;
-			}
+			boolean checkUserId = UserDAO.checkUserId(userId) ;
+//					TransactionController.memCached.getUserTransaction().containsKey(userIdStr);
+			//UserDAO.checkUserId(userId) ;
+//			if(checkUserId==false)
+//			{
+//				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+//				response.setEntity(new StringRepresentation("User id sai"));
+//				return;
+//			}
 		}
 		catch(NumberFormatException ex)
 		{

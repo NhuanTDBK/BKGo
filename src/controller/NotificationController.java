@@ -8,7 +8,6 @@ import java.util.Observer;
 
 import model.FileChange;
 import model.FileChangeDAO;
-import model.FileChangeFactory;
 import model.FileCursor;
 
 import org.restlet.Request;
