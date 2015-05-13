@@ -1,10 +1,8 @@
 package controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +22,6 @@ import org.restlet.data.Status;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.StringRepresentation;
-import org.w3c.dom.Document;
 
 import utils.Constants;
 import frame.ServerFrame;
@@ -41,15 +38,13 @@ public class FileResourceController extends Restlet {
 		if(request.getMethod().equals(Method.GET))
 		{
 		String fileIdString = (String) request.getAttributes().get("fileId");
-		String userId = (String) request.getAttributes().get("userId");
 		try {
 			int fileId = Integer.parseInt(fileIdString);
 			if (request.getMethod().equals(Method.GET)) {
 			
 				try {
-//					FileVersion fileVersion = FileVersionDAO
-//							.getById(fileId);
-					ServerFrame.logArea.append("Download file from "+ipAddressString);
+
+					ServerFrame.logArea.append("Download file from "+ipAddressString+"\n");
 					FileStorage fileStorage = FileStorageDAO
 							.getById(fileId);
 					File file = new File(fileStorage.getFileRealPath());
@@ -78,7 +73,6 @@ public class FileResourceController extends Restlet {
 			ServerFrame.logArea.append("Delete file "+fileName+" from "+ipAddressString);
 			try{
 				List<FileStorage> files = FileStorageDAO.getFileByFileName(fileName);
-				List<FileChange> fileChangeLst = new ArrayList<FileChange>();
 				int index = 0;
 				for(FileStorage file:files)
 				{
@@ -110,36 +104,5 @@ public class FileResourceController extends Restlet {
 			}
 		}
 		//Update file moi
-		else if(request.getMethod().equals(Method.PATCH))
-		{
-			DomRepresentation xmlRequest = new DomRepresentation(request.getEntity());
-			try {
-				Document doc = xmlRequest.getDocument();
-				String fileOldName = xmlRequest.getText("/File/OldName");
-				String fileNewName = xmlRequest.getText("/File/NewName");
-				String fileTimestamp = xmlRequest.getText("/File/Timestamp");
-				String tid = xmlRequest.getText("/File/TID");
-				int action = Integer.parseInt(xmlRequest.getText("/File/Type"));
-				//Luu file moi
-				FileStorage file = FileStorageDAO.getById(FileVersionDAO.getByFileName(fileOldName).getFileId());
-				file.setFileName(fileNewName);
-				FileStorageDAO.insertFile(file);
-				//Tao moi 1 transaction
-				FileChange fileChange = new FileChange();
-				fileChange.setType(action);
-				fileChange.setTid(Integer.parseInt(tid));
-				fileChange.setFileChangeId(file.getFileId());
-				fileChange.setBeforeChange(fileOldName);
-				fileChange.setAfterChange(fileNewName);
-				Date date = format.parse(fileTimestamp);
-				fileChange.setTimestamp(date);
-				fileChange.setIpAddress(ipAddressString);
-				//Luu vao DB
-				fileChangeDao.insertFile(fileChange,true);
-			} catch (IOException | ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 }

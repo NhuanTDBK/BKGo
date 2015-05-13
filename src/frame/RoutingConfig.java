@@ -22,7 +22,6 @@ public class RoutingConfig extends Application {
         router.attach("/user/{userId}/files/{type}", new UploadController());
         router.attach("/user/{userId}/file/{fileId}", new FileResourceController());
         router.attach("/user/{userId}/transaction", new TransactionController());
-        router.attach("/user/{userId}/sync/{tid}", new TransactionController());
         router.attach("/user/{userId}/update", new NotificationController());
         router.attach("/user/{userId}/revisions", new VersionController());
         router.attach("/user/{userId}/trash", new TrashController());

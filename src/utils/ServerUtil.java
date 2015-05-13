@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.restlet.ext.rdf.internal.turtle.StringToken;
 
 public class ServerUtil {
 	public static String encryptMessage(String input) throws NoSuchAlgorithmException

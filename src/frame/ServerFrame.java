@@ -7,17 +7,15 @@ package frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.nio.file.Paths;
 
 import javax.swing.Timer;
 
 import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Server;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jetty.HttpServerHelper;
-import org.restlet.util.Series;
 
+import service.NoticationServer;
 import utils.Constants;
 
 /**
@@ -30,6 +28,7 @@ public class ServerFrame extends javax.swing.JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -6425932400174207220L;
+	private Thread streamUpdate;
 	/**
      * Creates new form ServerFrame
      */
@@ -39,26 +38,20 @@ public class ServerFrame extends javax.swing.JFrame {
         final Runtime runtime = Runtime.getRuntime();
         memoryUsage.setMaximum(100);
         memoryUsage.setMinimum(0);
+        streamUpdate = new Thread(new NoticationServer());
         Component component = new Component();
+        
         component.getServers().add(Protocol.HTTP, Constants.PORT);
+        //component.getServers().get(0).setAddress("127.0.0.1");
         //Server s = new Server(Protocol.HTTP, Constants.PORT);
         //HttpServerHelper httpServerHelper = new HttpServerHelper(s);
         //System.out.println(httpServerHelper.getThreadPoolMaxThreads());
         RoutingConfig server = new RoutingConfig();
-        //component.getServers().add(httpServerHelper.getHelped());
+ 
         component.getDefaultHost().attach("", server);
         component.setAuthor("Nhuan TD");
         component.setName("Dropbox");
         component.getContext().getParameters().add("maxThreads", "512"); 
-
-//        Series<Parameter>param = component.getContext().getParameters();   
-//        System.out.println("size : "+param.size());
-//        for(Parameter p: param)
-//        {
-//        	String log = "Key: "+p.getName()+ ": "+p.getValue()+"\n";
-////        	logArea.append(log);
-//        	System.out.println(log);
-//        }
         try {
             component.start();
             System.out.println("Server is running!!!!");
@@ -81,6 +74,12 @@ public class ServerFrame extends javax.swing.JFrame {
                 memoryUsageLbl.setText(log);
             }
         });
+        File storage = Paths.get("storage/1").toFile();
+        if(!storage.exists())
+        {
+        	storage.mkdirs();
+        }
+        //System.out.println(component.getServers().get(0).getAddress());
         timer.start();
     }
 
@@ -119,7 +118,13 @@ public class ServerFrame extends javax.swing.JFrame {
         Stop.setText("Stop Server");
 
         connectMQ.setText("Connect to RabbitMQ");
-
+        connectMQ.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				streamUpdate.start();
+			}
+		});
         memoryUsage.setOrientation(1);
 
         jLabel1.setText("Memory Usage");
@@ -175,7 +180,7 @@ public class ServerFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void StartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartActionPerformed
-        // TODO add your handling code here:
+    
     }//GEN-LAST:event_StartActionPerformed
 
     /**
@@ -212,7 +217,6 @@ public class ServerFrame extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Start;
     private javax.swing.JButton Stop;

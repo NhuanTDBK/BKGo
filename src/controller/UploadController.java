@@ -72,7 +72,7 @@ public class UploadController extends Restlet {
 				FileUploadController files = new FileUploadController(userId);
 				files.handle(request, response);
 			} else if (type.equals("directory")) {
-				DirectoryUploadController directory = new DirectoryUploadController();
+				DirectoryController directory = new DirectoryController();
 				directory.handle(request, response);
 			}
 		} else if (method.compareTo(Method.GET) == 0) {
